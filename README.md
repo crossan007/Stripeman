@@ -23,5 +23,10 @@ const mock = webhooks.generateTestHeaderString({
   payload: pm.request.body,
   secret: pm.variables.get("StripeWebhookKey")
 });
+pm.request.headers.add( {
+    key: 'stripe-signature',
+    value: mock});
 console.log(mock);
 ```
+
+5) Manually craft Postman requests with a `raw` body of type `JSON` according to the format specified at: 
