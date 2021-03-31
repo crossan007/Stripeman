@@ -18,9 +18,10 @@ The Postman sandbox doesn't allow inclusion of local libraries, but lots of folk
 ```
 process = {};
 eval(pm.variables.get("StripeScript"));
+requestBody = pm.variables.replaceIn(pm.request.body.raw);
 const mock = webhooks.generateTestHeaderString({
   timestamp: Date.now(),
-  payload: pm.request.body,
+  payload: requestBody,
   secret: pm.variables.get("StripeWebhookKey")
 });
 pm.request.headers.add( {
