@@ -11,6 +11,17 @@ The Postman sandbox doesn't allow inclusion of local libraries, but lots of folk
 
 # Usage
 1) run `npx webpack --config webpack.config.js` to bundle this code
-2) Create a Postman Environment variable called `Stripe`
+2) Create a Postman Environment variable called `StripeScript`
 3) Paste `./dist/main.js` into the body of the Postman `Stripe` variable
-4) 
+4) Create a Postman environment variable called `StripeWebhookKey`, and paste your Stripe webhook key
+4) Create a new PreRequest script:
+```
+process = {};
+eval(pm.variables.get("StripeScript"));
+const mock = webhooks.generateTestHeaderString({
+  timestamp: Date.now(),
+  payload: pm.request.body,
+  secret: pm.variables.get("StripeWebhookKey")
+});
+console.log(mock);
+```
