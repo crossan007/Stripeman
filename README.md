@@ -17,17 +17,24 @@ The Postman sandbox doesn't allow inclusion of local libraries, but lots of folk
 4) Create a new PreRequest script:
 ```
 process = {};
-eval(pm.variables.get("StripeScript"));
-requestBody = pm.variables.replaceIn(pm.request.body.raw);
+if (!pm.variables.get("StripeWebhookKey")) {
+    throw new Error("No StripeWebhookKey variable defined")
+}
+try {
+  eval(pm.variables.get("StripeScript"));
+} catch(err) {
+  throw new Error("Failed including stripe script")
+}
 const mock = webhooks.generateTestHeaderString({
   timestamp: Date.now(),
-  payload: requestBody,
+  payload: pm.request.body,
   secret: pm.variables.get("StripeWebhookKey")
 });
 pm.request.headers.add( {
     key: 'stripe-signature',
     value: mock});
 console.log(mock);
+
 ```
 
 5) Manually craft Postman requests with a `raw` body of type `JSON` according to the format specified at: 
